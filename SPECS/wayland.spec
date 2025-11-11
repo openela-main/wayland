@@ -1,6 +1,6 @@
 Name:           wayland
-Version:        1.23.0
-Release:        2%{?dist}
+Version:        1.23.1
+Release:        1%{?dist}
 Summary:        Wayland Compositor Infrastructure
 
 # SPDX
@@ -117,6 +117,10 @@ Wayland server library
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Tue May 13 2025 Olivier Fourdan <ofourdan@redhat.com> - 1.23.1-1
+- Update to 1.23.1
+  Resolves: RHEL-86834
+
 * Tue Oct 29 2024 Troy Dawson <tdawson@redhat.com> - 1.23.0-2
 - Bump release for October 2024 mass rebuild:
   Resolves: RHEL-64018
