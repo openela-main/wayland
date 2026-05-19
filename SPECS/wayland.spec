@@ -1,5 +1,5 @@
 Name:           wayland
-Version:        1.23.1
+Version:        1.24.0
 Release:        1%{?dist}
 Summary:        Wayland Compositor Infrastructure
 
@@ -117,6 +117,10 @@ Wayland server library
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Wed Nov 05 2025 RHEL Packaging Agent <jotnar@redhat.com> - 1.24.0-1
+- Rebase to 1.24.0
+  Resolves: RHEL-107614
+
 * Tue May 13 2025 Olivier Fourdan <ofourdan@redhat.com> - 1.23.1-1
 - Update to 1.23.1
   Resolves: RHEL-86834
