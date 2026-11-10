@@ -1,5 +1,8 @@
+%global mdbook mdBook
+%global mdbook_version 0.5.3
+
 Name:           wayland
-Version:        1.24.0
+Version:        1.25.0
 Release:        1%{?dist}
 Summary:        Wayland Compositor Infrastructure
 
@@ -9,6 +12,9 @@ URL:            http://wayland.freedesktop.org/
 Source0:        https://gitlab.freedesktop.org/%{name}/%{name}/-/releases/%{version}/downloads/%{name}-%{version}.tar.xz
 Source1:        https://gitlab.freedesktop.org/%{name}/%{name}/-/releases/%{version}/downloads/%{name}-%{version}.tar.xz.sig
 Source2:        emersion-gpg-key.asc
+Source3:        https://github.com/rust-lang/mdBook/archive/refs/tags/v%{mdbook_version}/mdBook-%{mdbook_version}.tar.gz
+Source4:        %{mdbook}-%{mdbook_version}-vendor.tar.xz
+Source5:        create-mdbook-vendor.sh
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -21,6 +27,13 @@ BuildRequires:  libxslt
 BuildRequires:  meson
 BuildRequires:  pkgconfig(libffi)
 BuildRequires:  xmlto
+# For mdbook documentation build with vendored Rust dependencies
+%if 0%{?rhel}
+BuildRequires:  rust-toolset
+%else
+BuildRequires:  cargo-rpm-macros
+%endif
+BuildRequires:  cargo
 
 # For origin certification
 BuildRequires:  gnupg2
@@ -71,11 +84,20 @@ Summary: Wayland server library
 Wayland server library
 
 %prep
+# Extract mdbook source and setup vendored dependencies
+%setup -q -T -D -b3 -n %{mdbook}-%{mdbook_version}
+tar -xf %{SOURCE4}
+%cargo_prep -v vendor
+%cargo_build
+
 %{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
 %autosetup -p1
 
-%build
+%conf
+export PATH="%{_builddir}/%{mdbook}-%{mdbook_version}/target/release:$PATH"
 %meson
+
+%build
 %meson_build
 
 %install
@@ -117,6 +139,10 @@ Wayland server library
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Thu Jul 02 2026 Olivier Fourdan <ofourdan@redhat.com> - 1.25.0-1
+- Rebase to 1.25.0
+  Resolves: RHEL-191809
+
 * Wed Nov 05 2025 RHEL Packaging Agent <jotnar@redhat.com> - 1.24.0-1
 - Rebase to 1.24.0
   Resolves: RHEL-107614
